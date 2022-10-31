@@ -23,26 +23,32 @@ namespace SB.TechnicalTest
 {
     class Program
     {
+        static int times = 0;
+
         /// <summary>
         /// Main entry point.
         /// </summary>
         /// <param name="args"></param>
         static void Main(string[] args)
         {
+            Building.NumberFloors = 50;
+
             Console.WriteLine($"Attempt 1 Highest Safe Floor: {Attempt1()}");
-            Console.WriteLine($"Attempt 1 Total Drops: {Building.TotalDrops}");
+            Console.WriteLine($"Attempt 1 Total Drops: {times}");
 
             Console.WriteLine();
-            Building.Reset();
+            // Building.Reset();
+            Reset();
 
             Console.WriteLine($"Attempt 2 Highest Safe Floor: {Attempt2()}");
-            Console.WriteLine($"Attempt 2 Total Drops: {Building.TotalDrops}");
+            Console.WriteLine($"Attempt 2 Total Drops: {times}");
 
             Console.WriteLine();
-            Building.Reset();
+            // Building.Reset();
+            Reset();
 
             Console.WriteLine($"Attempt 3 Highest Safe Floor: {Attempt3()}");
-            Console.WriteLine($"Attempt 3 Total Drops: {Building.TotalDrops}");
+            Console.WriteLine($"Attempt 3 Total Drops: {times}");
         }
 
         /// <summary>
@@ -54,7 +60,7 @@ namespace SB.TechnicalTest
         static int Attempt1()
         {
             var i = 0;
-            while (++i <= Building.NumberFloors && Building.DropMarble(i));
+            while (++i <= Building.NumberFloors && Tester(i));
 
             return i - 1;
         }
@@ -75,8 +81,8 @@ namespace SB.TechnicalTest
                 if(nextDrop > Building.NumberFloors){
                     isSafe = false;
                     continue;
-                }
-                isSafe = Building.DropMarble(nextDrop);
+                }       
+                isSafe = Tester(nextDrop);
                 
                 if(isSafe){
                     range[0]=nextDrop;
@@ -99,7 +105,7 @@ namespace SB.TechnicalTest
             int nextDrop=0;
             while(range[1]-range[0]>1){
                 nextDrop= Convert.ToInt32(Math.Ceiling((range[1]-range[0])/2.0))+range[0];
-                isSafe = Building.DropMarble(nextDrop);
+                isSafe = Tester(nextDrop);
 
                 if(isSafe){
                     range[0] = nextDrop;
@@ -109,6 +115,20 @@ namespace SB.TechnicalTest
             }
 
             return isSafe?nextDrop:Array.Find(range,item=>item!=nextDrop);
+        }
+
+        private static bool Tester(int floor){
+            int maxSafeFloor = 10;
+            bool isSafe = floor < maxSafeFloor+1;
+            times++;
+
+            Console.WriteLine($"Dropped Marble from floor: {floor}, Safe: {isSafe}");
+
+            return isSafe;
+        }
+
+        private static void Reset(){
+            times = 0;
         }
     }
 }
