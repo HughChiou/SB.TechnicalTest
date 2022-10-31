@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.ComponentModel;
+using System;
 
 using SB.CoreTest;
 
@@ -36,6 +37,12 @@ namespace SB.TechnicalTest
 
             Console.WriteLine($"Attempt 2 Highest Safe Floor: {Attempt2()}");
             Console.WriteLine($"Attempt 2 Total Drops: {Building.TotalDrops}");
+
+            Console.WriteLine();
+            Building.Reset();
+
+            Console.WriteLine($"Attempt 3 Highest Safe Floor: {Attempt3()}");
+            Console.WriteLine($"Attempt 3 Total Drops: {Building.TotalDrops}");
         }
 
         /// <summary>
@@ -58,8 +65,8 @@ namespace SB.TechnicalTest
         /// <returns>Highest safe floor.</returns>
         static int Attempt2()
         {
-            double maxDropTimes = Math.Floor(Math.Log2(Convert.ToDouble(Building.NumberFloors)));
-            var nextDrop = Convert.ToInt32(Math.Pow(2.0,maxDropTimes));
+            double maxDropTimes = Math.Ceiling(Math.Log2(Convert.ToDouble(Building.NumberFloors+1)));
+            var nextDrop = Convert.ToInt32(Math.Pow(2.0,maxDropTimes--));
             int[] range ={0,Building.NumberFloors};
 
             for (double i = maxDropTimes-1; i >=0; i--) {          
@@ -77,6 +84,29 @@ namespace SB.TechnicalTest
             }
             
             return Building.DropMarble(nextDrop)?nextDrop:nextDrop-1;
+        }
+
+        /// <summary>
+        /// Third attempt - I found I was wrong in attempt 2, just another try
+        /// </summary>
+        /// <returns>Highest safe floor.</returns>
+        static int Attempt3()
+        {
+            int[] range = {0,Building.NumberFloors+1};
+            bool isSafe = false;
+            int nextDrop=0;
+            while(range[1]-range[0]>1){
+                nextDrop= Convert.ToInt32(Math.Ceiling((range[1]-range[0])/2.0))+range[0];
+                isSafe = Building.DropMarble(nextDrop);
+
+                if(isSafe){
+                    range[0] = nextDrop;
+                }else{
+                    range[1] = nextDrop;
+                }
+            }
+
+            return isSafe?nextDrop:Array.Find(range,item=>item!=nextDrop);
         }
     }
 }

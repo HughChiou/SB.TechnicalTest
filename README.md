@@ -1,0 +1,1 @@
+Approach of attempt3 may be much readable and easy to understand. So I added it.
