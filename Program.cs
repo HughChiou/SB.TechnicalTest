@@ -65,25 +65,27 @@ namespace SB.TechnicalTest
         /// <returns>Highest safe floor.</returns>
         static int Attempt2()
         {
+            int[] range ={0,Building.NumberFloors+1};
             double maxDropTimes = Math.Ceiling(Math.Log2(Convert.ToDouble(Building.NumberFloors+1)));
-            var nextDrop = Convert.ToInt32(Math.Pow(2.0,maxDropTimes--));
-            int[] range ={0,Building.NumberFloors};
+            var nextDrop = 0;
+            var isSafe = true;
 
-            for (double i = maxDropTimes-1; i >=0; i--) {          
-                var isSafe = false;
-                if(nextDrop<Building.NumberFloors){
-                    isSafe = Building.DropMarble(nextDrop);
+            for (double i = maxDropTimes; i >0; i--) {   
+                nextDrop += Convert.ToInt32(Math.Pow(2.0,i-1)) * (isSafe ? 1:-1);
+                if(nextDrop > Building.NumberFloors){
+                    isSafe = false;
+                    continue;
                 }
+                isSafe = Building.DropMarble(nextDrop);
                 
                 if(isSafe){
                     range[0]=nextDrop;
                 }else{
                     range[1]=nextDrop;
                 }
-                nextDrop += Convert.ToInt32(Math.Pow(2.0,i)) * (isSafe ? 1:-1);
             }
             
-            return Building.DropMarble(nextDrop)?nextDrop:nextDrop-1;
+            return isSafe?nextDrop:Array.Find(range,item=>item!=nextDrop);
         }
 
         /// <summary>
